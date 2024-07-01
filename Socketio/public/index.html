@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+</head>
+
+<body>
+
+    <h1>Chat application</h1>
+    
+    <input type="text" id="message">
+    <button id="sendBtn">send</button>
+    <div id="messagedata"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        const sendBtn = document.getElementById('sendBtn');
+        const message = document.getElementById('message')
+        const messageData = document.getElementById('messagedata')
+
+        const socket = io()
+
+        socket.on('message', (message) => {
+            const p = document.createElement('p')
+            p.innerText = message
+            messageData.appendChild(p)
+        })
+
+        sendBtn.addEventListener('click', (e) => {
+            const messages = message.value;
+            socket.emit('user-message', messages)
+        })
+
+    </script>
+</body>
+
+</html>
