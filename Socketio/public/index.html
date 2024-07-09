@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,32 +9,101 @@
 
 <body>
 
-    <h1>Chat application</h1>
-    
+    <h1>Chat Application</h1>
+
     <input type="text" id="message">
-    <button id="sendBtn">send</button>
+    <button id="sendBtn">Send</button>
     <div id="messagedata"></div>
 
-    <script src="/socket.io/socket.io.js"></script>
+    <input id="room" placeholder="Room Name" />
+    <button onclick="joinRoom()">Join Room</button>
+    <button onclick="leaveRoom()">Leave Room</button>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 
     <script>
         const sendBtn = document.getElementById('sendBtn');
-        const message = document.getElementById('message')
-        const messageData = document.getElementById('messagedata')
+        const message = document.getElementById('message');
+        const messageData = document.getElementById('messagedata');
+        const roomInput = document.getElementById('room');
 
-        const socket = io()
+        const socket = io();
+
+        function joinRoom() {
+            const room = roomInput.value;
+            socket.emit('joinRoom', room);
+        }
+
+        function leaveRoom() {
+            const room = roomInput.value;
+            socket.emit('leaveRoom', room);
+        }
 
         socket.on('message', (message) => {
+            const p = document.createElement('p');
+            p.innerText = message;
+            messageData.appendChild(p);
+        });
+
+        sendBtn.addEventListener('click', () => {
+            const room = roomInput.value;
+            const messages = message.value;
+            socket.emit('user-message', { room, message: messages });
+        });
+    </script>
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chap Application</title>
+</head>
+
+<body>
+    <h1>Chatting</h1>
+    <input type="text" placeholder="message" id="message">
+    <button id="sendBtn">send</button>
+
+    <input id="room" placeholder="Room Name" />
+    <button onclick="joinRoom()">Join Room</button>
+    <button onclick="leaveRoom()">LeaveRoom</button>
+
+    <div id="messages"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io()
+
+        const messageInput = document.getElementById('message')
+        const btn = document.getElementById('sendBtn')
+        const allMessages = document.getElementById('messages')
+
+        function joinRoom() {
+            const room = document.getElementById('room').value;
+            socket.emit('joinRoom', room);
+        }
+
+        function leaveRoom() {
+            const room = document.getElementById('room').value
+            socket.emit('leaveRoom', room)
+        }
+
+        socket.on('sendMessage', message => {
             const p = document.createElement('p')
             p.innerText = message
-            messageData.appendChild(p)
+            allMessages.appendChild(p)
         })
 
-        sendBtn.addEventListener('click', (e) => {
-            const messages = message.value;
-            socket.emit('user-message', messages)
+        btn.addEventListener('click', (e) => {
+            const message = messageInput.value;
+            socket.emit('message', message)
         })
-
     </script>
 </body>
 
